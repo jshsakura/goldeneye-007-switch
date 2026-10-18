@@ -25,6 +25,10 @@
 #include "system.h"
 #include "config.h"
 #include "updatecheck.h"
+#include "switch_port_log.h"
+#ifdef __SWITCH__
+#include "portaddr.h"
+#endif
 #include "fs.h"
 #include "romdata.h"
 #include "dram.h"
@@ -127,6 +131,14 @@ int main(int argc, char **argv)
 {
     sysSetArgs(argc, argv);
 
+#if defined(__SWITCH__)
+    {
+        extern uintptr_t g_port_rebase;
+        g_port_rebase = 0;
+        plog("=== port start === DRAM=0x%08lx CART=0x10000000", (unsigned long)PORT_DRAM_V1_BASE);
+    }
+#endif
+
     if (sysArgCheck("--version")) { portPrintVersion(); return 0; }
     if (sysArgCheck("--help") || sysArgCheck("-h")) {
         portPrintHelp(argv[0]);
@@ -140,6 +152,7 @@ int main(int argc, char **argv)
 
     /* Crash handler first, so any failure below is debuggable. */
     crashInit();
+    plog("crashInit done");
 
     /* -fresh: clean-slate run -- drop the file-backed EEPROM save and the
      * ini before anything reads them (configLoad below, eeprom's lazy load).
@@ -182,6 +195,7 @@ int main(int argc, char **argv)
      *     save is never patched. */
     portAllUnlockedApply();
 
+    plog("calling romdataInit");
     /* 2. Load the ROM and map segments. */
     if (romdataInit() != 0) {
         sysLogPrintf(LOG_ERROR, "Failed to load the ROM (no .z64 in the data/ dir, "
@@ -211,18 +225,22 @@ int main(int argc, char **argv)
      * load address is not constrained. sysImageBase() is a stub here anyway. */
 #endif
 
+    plog("calling dramReserve");
     /* 2b. Reserve the N64-DRAM region: s32-safe view @ 0x70000000 (cfb_16,
      *     mempools) + KSEG0 mirror @ 0x80000000 (see port/src/dram.c). */
     dramReserve();
+    plog("dramReserve done; calling videoInit");
 
     /* 3. Video / audio / input. */
     if (videoInit() != 0) {
         sysLogPrintf(LOG_ERROR, "videoInit failed");
         return 1;
     }
+    plog("videoInit done; calling audio/mixer/inputInit");
     audioInit();
     mixerInit();
     inputInit();
+    plog("audio/mixer/inputInit done");
 
     /* 4. Run the game. mainproc() runs as the N64 mainThread (a real OS
      *    thread with its own stack); it creates the rmon/idle/scheduler/
@@ -257,10 +275,12 @@ int main(int argc, char **argv)
         }
     }
 
+    plog("calling portKernelInit + osStartThread(mainThread)");
     portKernelInit();
     osCreateThread(&mainThread, MAIN_THREAD_ID, &mainproc, NULL, NULL,
                    MAIN_THREAD_PRIORITY);
     osStartThread(&mainThread);
+    plog("osStartThread(mainThread) launched; entering event loop");
 
     /* 5. Host thread: pump SDL events until the window is closed / ESC.
      *    videoPumpEvents() exits the process on quit. */

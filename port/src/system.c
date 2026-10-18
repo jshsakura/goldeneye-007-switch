@@ -30,6 +30,9 @@
 #endif
 
 #include "system.h"
+#ifdef __SWITCH__
+#include "switch_port_log.h"
+#endif
 
 /* --- Time --------------------------------------------------------------- */
 
@@ -95,6 +98,17 @@ void sysLogPrintf(enum LogLevel level, const char *fmt, ...)
     vfprintf(stderr, fmt, ap);
     va_end(ap);
     fprintf(stderr, "\n");
+#ifdef __SWITCH__
+    if (!g_pl_file) g_pl_file = fopen("sdmc:/switch/ge007/port.log", "a");
+    if (g_pl_file) {
+        fprintf(g_pl_file, "[%s] ", tags[level]);
+        va_start(ap, fmt);
+        vfprintf(g_pl_file, fmt, ap);
+        va_end(ap);
+        fputc('\n', g_pl_file);
+        fflush(g_pl_file);
+    }
+#endif
 }
 
 void sysFatalError(const char *fmt, ...)
@@ -108,6 +122,17 @@ void sysFatalError(const char *fmt, ...)
     va_end(ap);
     fprintf(stderr, "\n");
     fflush(stderr);
+#ifdef __SWITCH__
+    if (!g_pl_file) g_pl_file = fopen("sdmc:/switch/ge007/port.log", "a");
+    if (g_pl_file) {
+        fprintf(g_pl_file, "[FATAL] ");
+        va_start(ap, fmt);
+        vfprintf(g_pl_file, fmt, ap);
+        va_end(ap);
+        fputc('\n', g_pl_file);
+        fflush(g_pl_file);
+    }
+#endif
     abort();
 }
 
@@ -149,6 +174,10 @@ int sysRelaunchSelf(void)
     CloseHandle(pi.hProcess);
     return 0;
 #else
+#if defined(__SWITCH__)
+    /* Horizon: no processes — restart is not possible. */
+    return -1;
+#else
     if (!g_argv || g_argc <= 0) return -1;
     char exe[4096];
     ssize_t n = readlink("/proc/self/exe", exe, sizeof(exe) - 1);
@@ -161,6 +190,7 @@ int sysRelaunchSelf(void)
         _exit(127);
     }
     return 0;
+#endif
 #endif
 }
 

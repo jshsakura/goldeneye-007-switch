@@ -729,6 +729,7 @@ extern "C" int gfx_texture_cache_count(void) {
 }
 
 extern "C" u8 *g_VtxBuffers[3]; /* dyn.c per-frame pool (dynamic-texture cache key) */
+extern "C" void *g_JpnCharCachePixels; /* language.c Japanese/Korean dynamic char pixel cache */
 
 static bool gfx_texture_cache_lookup(int i, const TextureCacheKey& key) {
     TextureCacheMap::iterator it = gfx_texture_cache.map.find(key);
@@ -769,7 +770,7 @@ static bool gfx_texture_cache_lookup(int i, const TextureCacheKey& key) {
     return false;
 }
 
-void gfx_texture_cache_delete(const uint8_t* orig_addr) {
+extern "C" void gfx_texture_cache_delete(const uint8_t* orig_addr) {
     gfx_flush();
 
     for (int i = 0; i < 2; ++i) {
@@ -798,7 +799,7 @@ void gfx_texture_cache_delete(const uint8_t* orig_addr) {
     }
 }
 
-void gfx_texture_cache_delete_range(const uint8_t* start, const uint8_t* end) {
+extern "C" void gfx_texture_cache_delete_range(const uint8_t* start, const uint8_t* end) {
     gfx_flush();
 
     for (int i = 0; i < 2; ++i) {
@@ -839,6 +840,7 @@ static bool gfx_tex_source_is_c_array(const uint8_t* addr) {
     // 0x90000000 and bswapped every DRAM texture (mirrored texel pairs).
     if (a >= PORT_DRAM_V1_BASE && a < PORT_DRAM_V1_BASE + PORT_DRAM_SIZE) return false;
     if (a >= PORT_DRAM_K0_BASE && a < PORT_DRAM_K0_BASE + PORT_DRAM_SIZE) return false;
+    if (a >= 0x80000000u && a < 0x80000000u + PORT_DRAM_SIZE) return false;
     return true; // exe image: C-compiled array
 }
 
@@ -1282,14 +1284,24 @@ static void import_texture(int i, int tile, bool importReplacement) {
         const uint8_t* v1addr = orig_addr;
         if ((uintptr_t)v1addr >= PORT_DRAM_K0_BASE && (uintptr_t)v1addr < PORT_DRAM_K0_BASE + PORT_DRAM_SIZE) {
             v1addr -= (PORT_DRAM_K0_BASE - PORT_DRAM_V1_BASE);
+        } else if ((uintptr_t)v1addr >= 0x80000000u && (uintptr_t)v1addr < 0x80000000u + PORT_DRAM_SIZE) {
+            v1addr = (const uint8_t *)((uintptr_t)v1addr - 0x80000000u + PORT_DRAM_V1_BASE);
         }
-        if (g_VtxBuffers[0] && v1addr >= g_VtxBuffers[0] && v1addr < g_VtxBuffers[2]) {
+        const bool is_dyn = (g_VtxBuffers[0] && v1addr >= g_VtxBuffers[0] && v1addr < g_VtxBuffers[2]);
+        const bool is_jpn_glyph = (g_JpnCharCachePixels &&
+                                   v1addr >= (const uint8_t *)g_JpnCharCachePixels &&
+                                   v1addr < (const uint8_t *)g_JpnCharCachePixels + 0x2E80);
+        if (is_dyn || is_jpn_glyph) {
             uint32_t h = 2166136261u;
             const uint32_t n = loaded_texture.size_bytes;
             for (uint32_t b = 0; b < n; b++) {
                 h = (h ^ orig_addr[b]) * 16777619u;
             }
-            key.palette_hash = h ? h : 1u;
+            if (is_dyn) {
+                key.palette_hash = h ? h : 1u;
+            } else {
+                key.palette_hash ^= (h ? h : 1u);
+            }
         }
     }
 
@@ -3364,11 +3376,13 @@ static void gfx_sp_moveword(uint8_t index, uint16_t offset, uintptr_t data) {
             rsp.fog_mul = (int16_t)(data >> 16);
             rsp.fog_offset = (int16_t)data;
             break;
-        case G_MW_SEGMENT:
+        case G_MW_SEGMENT: {
             // GE registers segment bases as OS_K0_TO_PHYSICAL(ptr); store the
             // live host pointer so seg_addr() resolves seg+offset correctly.
-            segmentPointers[(offset >> 2) & 0xff] = (data < PORT_DRAM_SIZE) ? (data + PORT_DRAM_K0_BASE) : data;
+            uint32_t off = (data & 0x80000000u) ? (data & 0x7fffffffu) : data;
+            segmentPointers[(offset >> 2) & 0xff] = (off < PORT_DRAM_SIZE) ? (off + PORT_DRAM_V1_BASE) : data;
             break;
+        }
     }
 }
 
@@ -4055,6 +4069,10 @@ static void gfx_sp_vertex_float(size_t n_vertices, size_t dest_index, const Port
     }
 }
 
+#if defined(__SWITCH__)
+extern "C" char _start[];
+#endif
+
 static inline void *seg_addr(uintptr_t w1) {
     // GE model files reference GDLs (gSPDisplayList) and vertex arrays by raw
     // VMA 0x05xxxxxx WITHOUT the LSB set; segment 5 is set per-render to the
@@ -4079,6 +4097,17 @@ static inline void *seg_addr(uintptr_t w1) {
     // (embedded image blob). Convention: segment in bits 24-27, 24-bit offset.
     // Runtime pointers never land here: DRAM lives at >= 0x70000000 and
     // K0-physical values are < 0x800000 (nibble 24 == 0).
+#if defined(__SWITCH__)
+    {
+        const uintptr_t mod_start = (uintptr_t)_start;
+        const uintptr_t mod_end   = (uintptr_t)(void *)&segmentPointers[0] + 0x200000ULL;
+        const uint32_t  lo_start  = (uint32_t)mod_start;
+        const uint32_t  lo_end    = (uint32_t)mod_end;
+        if (lo_start < lo_end && (uint32_t)w1 >= lo_start && (uint32_t)w1 < lo_end) {
+            return (void *)((mod_start & 0xffffffff00000000ULL) | (uint32_t)w1);
+        }
+    }
+#endif
     if (w1 < 0x10000000 && ((w1 >> 24) & 0xf)) {
         const uintptr_t seg = (w1 >> 24) & 0xf;
         if (segmentPointers[seg]) {
@@ -4089,7 +4118,10 @@ static inline void *seg_addr(uintptr_t w1) {
     // in the reserved N64-DRAM region (port/src/dram.c); map it back. The
     // region is 8 MB, so any offset below 0x800000 came from there.
     if (w1 < PORT_DRAM_SIZE) {
-        return (void *)(w1 + PORT_DRAM_K0_BASE);
+        return (void *)(w1 + PORT_DRAM_V1_BASE);
+    }
+    if ((w1 & 0x80000000u) && ((w1 & 0x7fffffffu) < PORT_DRAM_SIZE)) {
+        return (void *)((w1 & 0x7fffffffu) + PORT_DRAM_V1_BASE);
     }
     // D131: a GBI DL built by game code can reference a COMPILED symbol via
     // osVirtualToPhysical() (a u32-returning shim), which truncates the

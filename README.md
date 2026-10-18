@@ -1,12 +1,14 @@
-# GoldenEye 007 PC Port
+# GoldenEye 007 PC & Nintendo Switch Port
 
 [![CI](https://github.com/jkdansereau/goldeneye-pc-port/actions/workflows/ci.yml/badge.svg)](https://github.com/jkdansereau/goldeneye-pc-port/actions/workflows/ci.yml)
 [![Latest release](https://img.shields.io/github/v/release/jkdansereau/goldeneye-pc-port?include_prereleases&label=download)](https://github.com/jkdansereau/goldeneye-pc-port/releases)
-![Platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20Linux%20%7C%20Steam%20Deck-blue)
+![Platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20Linux%20%7C%20Steam%20Deck%20%7C%20Nintendo%20Switch-blue)
 ![license](https://img.shields.io/badge/license-MIT-ffb454)
 
-**GoldenEye 007 (Nintendo 64, 1997) as a native PC game for Windows, Linux
-and Steam Deck.** Native widescreen, a steady 60 fps, 2–4 player
+> 🎮 **Looking for the Nintendo Switch port (Korean + Gyro Motion Controls)?**
+> See the [Nintendo Switch Guide (README_SWITCH.md)](README_SWITCH.md).
+
+**GoldenEye 007 (Nintendo 64, 1997) as a native PC & Nintendo Switch game.** Native widescreen, a steady 60 fps, 2–4 player
 split-screen, mouse and keyboard or a modern controller, rebindable controls
 and an in-game options menu. No
 emulator, and not a binary recompilation: the game's own
@@ -17,7 +19,7 @@ for your PC and running from your own ROM.
 **[Download the latest release](https://github.com/jkdansereau/goldeneye-pc-port/releases)**,
 then follow the [Quick start](#quick-start).
 
-[Quick start](#quick-start) · [Controls](#controls) · [Features](#features) · [Settings and files](#settings-and-files) · [Troubleshooting](#troubleshooting) · [Roadmap](#roadmap) · [Building](#building-from-source) · [Legal](#legal)
+[Nintendo Switch Guide](README_SWITCH.md) · [Quick start](#quick-start) · [Controls](#controls) · [Features](#features) · [Settings and files](#settings-and-files) · [Troubleshooting](#troubleshooting) · [Roadmap](#roadmap) · [Building](#building-from-source) · [Legal](#legal)
 
 > [!IMPORTANT]
 > **You must supply your own GoldenEye 007 ROM.** This repository and its

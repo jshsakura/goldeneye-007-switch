@@ -19,6 +19,8 @@ static void langFixupLoadedBank(char *name, void *p)
     if (idx >= 0 && resource_lookup_data_array[idx].poolRemaining != 0)
         romdataFixupLangBank((u8 *)p, resource_lookup_data_array[idx].poolRemaining);
 }
+extern void gfx_texture_cache_delete(const u8 *orig_addr);
+extern void gfx_texture_cache_delete_range(const u8 *start, const u8 *end);
 #endif
 
 // bss
@@ -258,6 +260,9 @@ void langInit(void) {
             g_JpnCacheCacheItems[i].ttl =0;
             g_JpnCacheCacheItems[i].codepoint =-1;
         }
+#ifdef PORT
+        gfx_texture_cache_delete_range((const u8 *)g_JpnCharCachePixels, (const u8 *)g_JpnCharCachePixels + 0x2E80);
+#endif
     }
 
 	for (i = 0; i < 45; i++) {
@@ -362,6 +367,9 @@ struct jpncharpixels *langGetJpnCharPixels(s32 codepoint)
 		g_JpnCacheCacheItems[freeindexsingle].codepoint = codepoint >> 1;
 
 		romCopy(&g_JpnCharCachePixels[freeindexsingle * 8], (romptr_t) &_jfontchardataSegmentRomStart + (codepoint >> SHIFTAMOUNT) * 0x60, 0x60);
+#ifdef PORT
+		gfx_texture_cache_delete((const u8 *)&g_JpnCharCachePixels[freeindexsingle * 8]);
+#endif
 
 		return &g_JpnCharCachePixels[freeindexsingle * 8];
 	}
@@ -373,6 +381,9 @@ struct jpncharpixels *langGetJpnCharPixels(s32 codepoint)
 		g_JpnCacheCacheItems[freeindexmulti + 1].codepoint = codepoint >> 1;
 
 		romCopy(&g_JpnCharCachePixels[freeindexmulti * 8], (romptr_t) &_efontchardataSegmentRomStart + ((codepoint & 0x1fff) >> SHIFTAMOUNT) * 0x80, 0x80);
+#ifdef PORT
+		gfx_texture_cache_delete((const u8 *)&g_JpnCharCachePixels[freeindexmulti * 8]);
+#endif
 
 		return &g_JpnCharCachePixels[freeindexmulti * 8];
 	}

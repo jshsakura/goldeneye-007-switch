@@ -83,6 +83,7 @@
 #include "envflag.h"
 #include "optionsoverlay.h"
 #include "video.h"
+#include "switch_gyro.h"
 /* D194 absolute aim: read-only access to the live camera (struct player).
  * Game header pulled in through the same shim path every other compiled game
  * file uses; we only READ vv_theta/vv_verta/speedtheta/speedverta/aspect. */
@@ -103,6 +104,7 @@ extern s32 g_EnterTankAudioState;      /* bondview2.c: tank entry/running state 
 /* gun.c: native weapon-switch entry points (not exposed in gun.h). */
 extern ITEM_IDS get_next_weapon_in_cycle_for_hand(GUNHAND hand, s32 direction);
 extern void gunRequestHandWeaponChange(enum GUNHAND hand, s32 nextWeapon, s32 cycleDirection);
+static void swayFeedTheta(double deg);
 
 /* N64 button bits (from PR/os.h -- duplicated here to avoid pulling os.h,
  * whose `u8 errno;` field collides with <errno.h>'s macro). */
@@ -1043,6 +1045,9 @@ static int padSouthpaw     = 0;               /* 1 = swap fire (G) / grenade (R)
 static int padLookSmooth   = 0;               /* right-stick look low-pass strength, 0-10 (0 = off, 10 = max) */
 static int padTriggerPct   = 25;              /* trigger press point, % of travel (~30*256) */
 static int padLookInvertY  = 0;               /* 1 = invert right-stick (look) Y */
+static int gyroMode        = 1;               /* 0 = off, 1 = aim only (ZL/L), 2 = always on */
+static int gyroSensitivity = 100;             /* gyro sensitivity % (100 = 1.0x) */
+static int gyroInvertY     = 0;               /* 1 = invert gyro Y */
 static int inputDefaultsRev = 0;              /* D546: 1 once the deadzone default migration ran */
 /* Per-pad look-smoothing EMA state (Wave A item 5), one X/Y pair per pad. Reset
  * on hot-unplug (inputRescanPads) so a smoothed value can't stick after the
@@ -1558,6 +1563,7 @@ int inputInit(void)
         padInst[i] = -1;
     }
     inputOpenPads();
+    switchGyroInit();
 
     inputMigrateBinds();  /* D380: materialise effective GEPD defaults once */
     inputRebuildBinds();   /* D214: parse [Bind] now that configLoad() has run */
@@ -2100,6 +2106,9 @@ static unsigned inputComputePadSlot(int idx, signed char *stick_x, signed char *
 unsigned inputComputePad(int idx, signed char *stick_x, signed char *stick_y)
 {
     unsigned r;
+    if (idx == 0) {
+        switchGyroUpdate();
+    }
     if (idx > 0 && inputMpSplit() && idx >= getPlayerCount()) {   /* D416: no player owns this slot */
         if (stick_x) *stick_x = 0;
         if (stick_y) *stick_y = 0;
@@ -2791,7 +2800,7 @@ static unsigned inputComputePadSlot(int idx, signed char *stick_x, signed char *
              * STICK_MAX), and an optional low-pass. All feel-only, identity at
              * their defaults (sens 100%, smoothing off). */
             int rxs = scaleAxis(rx, padDeadzoneR);
-            int rys = -scaleAxis(ry, padDeadzoneR);   /* SDL up = negative -> N64 up = positive */
+            int rys = scaleAxis(ry, padDeadzoneR);   /* SDL up = negative -> GE look up = negative stick_y */
             if (padLookSensX != 100 && rxs) rxs = rxs * padLookSensX / 100;
             if (padLookSensY != 100 && rys) rys = rys * padLookSensY / 100;
             if (rxs >  STICK_MAX) rxs =  STICK_MAX; else if (rxs < -STICK_MAX) rxs = -STICK_MAX;
@@ -2803,6 +2812,39 @@ static unsigned inputComputePadSlot(int idx, signed char *stick_x, signed char *
                 padSmSY[idx] = padSmSY[idx] * a + (double)rys * (1.0 - a);
                 rxs = (int)lround(padSmSX[idx]);
                 rys = (int)lround(padSmSY[idx]);
+            }
+            if (idx == 0 && gyroMode > 0) {
+                int isAiming = (slotPlayer() && slotPlayer()->insightaimmode);
+                const PadBinds *pbAim = &padTabGet()->seat[padSeatForSlot(idx)];
+                if (pbAim && (padReadRaw(pad) & pbAim->mask[PA_AIM])) isAiming = 1;
+
+                if (gyroMode == 2 || (gyroMode == 1 && isAiming)) {
+                    float g_p = 0.0f, g_y = 0.0f;
+                    if (switchGyroGet(&g_p, &g_y)) {
+                        struct player *p = slotPlayer();
+                        if (p != NULL && !p->bonddead && p->outside_watch_menu &&
+                            p->pause_state == 0 && !gameScriptedCameraActive()) {
+                            f32 fov = slotFovY();
+                            f32 fovScale = (fov > 0.0f) ? (fov / 60.0f) : 1.0f;
+                            float sens = (float)gyroSensitivity / 100.0f;
+
+                            /* Switch gyro: g_y and g_p are in rev/s.
+                             * 1 rev/s = 360 deg/s. In 1 frame at 60 FPS: 360 / 60 = 6.0 deg/frame.
+                             * Direct camera rotation gives true 1:1 natural tracking without
+                             * stick integrator spring-back or deadzone clamping. */
+                            float d_theta = g_y * (6.0f * sens * fovScale);
+                            float d_verta = g_p * (6.0f * sens * fovScale);
+                            if (gyroInvertY) d_verta = -d_verta;
+
+                            p->vv_theta += d_theta;
+                            p->vv_verta += d_verta;
+                            if (p->vv_verta >  90.0f) p->vv_verta =  90.0f;
+                            if (p->vv_verta < -90.0f) p->vv_verta = -90.0f;
+
+                            swayFeedTheta((double)d_theta);
+                        }
+                    }
+                }
             }
             if (padLookInvertY) rys = -rys;
             if (aimModeGet() == AIMMODE_CENTRED && padDirectCompute(rxs, rys)) {
@@ -2828,11 +2870,11 @@ static unsigned inputComputePadSlot(int idx, signed char *stick_x, signed char *
             if (py) sy = py;
             if (idx == 0 && (px || py)) s_aimDevMouse = 0;   /* D337: pad aim active */
 
-            if (padLookInvertY) ry = -ry;
+            int dry = padLookInvertY ? ry : -ry;
             if (rx >  RSTICK_THRESHOLD) button |= GE_CONT_F;
             if (rx < -RSTICK_THRESHOLD) button |= GE_CONT_C;
-            if (ry >  RSTICK_THRESHOLD) button |= GE_CONT_D;
-            if (ry < -RSTICK_THRESHOLD) button |= GE_CONT_E;
+            if (dry >  RSTICK_THRESHOLD) button |= GE_CONT_D;   /* C-down = look up */
+            if (dry < -RSTICK_THRESHOLD) button |= GE_CONT_E;   /* C-up = look down */
         }
 
         /* D469: triggers/faces/shoulders/Start/D-pad via the data-driven
@@ -3951,6 +3993,9 @@ PD_CONSTRUCTOR static void inputConfigInit(void)
     configRegisterInt("Input.PadLookSmooth", &padLookSmooth, 0, 10);   /* Wave A: look low-pass strength, 0-10 (0 = off) */
     configRegisterInt("Input.PadTriggerPct", &padTriggerPct, 1, 99);
     configRegisterInt("Input.PadLookInvertY", &padLookInvertY, 0, 1);
+    configRegisterInt("Input.Gyro", &gyroMode, 0, 2);
+    configRegisterInt("Input.GyroSensitivity", &gyroSensitivity, 10, 400);
+    configRegisterInt("Input.GyroInvertY", &gyroInvertY, 0, 1);
     /* D401: global rumble scale (0 = silent .. 1 = full), applied to every
      * pad in inputRumble(). One setting for all pads (user call, 2026-09-28):
      * the original per-pad Input.PlayerN.RumbleScale keys were dropped --

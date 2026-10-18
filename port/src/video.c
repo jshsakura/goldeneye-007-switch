@@ -114,7 +114,7 @@ s32 portNoHitFlash = 0;
  * (gunfire.c gunDrawSight, #ifdef PORT). Default keeps the original
  * authored red sprite; hide is opt-in. */
 s32 portCrosshairHide = 0;
-static int cfgCrosshairPersistent = 0;   /* D436: 1 = draw the sight outside aim mode too */
+static int cfgCrosshairPersistent = 0;   /* D436: 0 = aim mode only, authentic N64 */
 int portCrosshairPersistent(void) { return cfgCrosshairPersistent; }
 static int cfgCrosshairColor = 0;   /* 0 = authored sprite; 8 = custom RGB (D569: old presets 1..7 migrate to 8 at startup) */
 static int cfgCrosshairRed = 255, cfgCrosshairGreen = 255, cfgCrosshairBlue = 255;

@@ -49,9 +49,13 @@
 #include "platform.h"
 #include "system.h"
 #include "portaddr.h"
+#include "portaddr_runtime.h"
 
 #if defined(PLATFORM_WINDOWS)
 #include <windows.h>
+#elif defined(__SWITCH__)
+#include <stdint.h>
+void *switchMapDramDual(uintptr_t base1, uintptr_t base2, size_t size);
 #else
 #define _GNU_SOURCE /* memfd_create — must precede all system headers */
 #include <sys/mman.h>
@@ -102,6 +106,29 @@ void *dramReserve(void)
     CloseHandle(hSec);
     return v1;
 #else
+#if defined(__SWITCH__)
+    /* Horizon: one shared-memory object, mapped at both (rebased) addresses.
+     * See switch_mman.c and portaddr_runtime.h. */
+    {
+        uintptr_t v1a = portRebaseAddr((uintptr_t)DRAM_V1_BASE);
+        uintptr_t k0a = portRebaseAddr((uintptr_t)DRAM_K0_BASE);
+        void *v1 = switchMapDramDual(v1a, k0a, DRAM_SIZE);
+        if (v1 != (void *)v1a) {
+            sysFatalError("dram: could not map DRAM at 0x%lX/0x%lX",
+                          (unsigned long)v1a, (unsigned long)k0a);
+        }
+        ((volatile char *)v1)[0] = 0x5A;
+        if (*((volatile char *)v1) != 0x5A) {
+            sysFatalError("dram: V1 view is not writable");
+        }
+        /* K0 alias check */
+        if (*(volatile char *)(uintptr_t)k0a != 0x5A) {
+            sysFatalError("dram: K0 mirror does not alias V1");
+        }
+        ((volatile char *)v1)[0] = 0;
+        return v1;
+    }
+#else
     /* memfd + two MAP_SHARED mmaps = one backing store, two views. */
     int fd = memfd_create("ge007_dram", 0);
     if (fd < 0) {
@@ -133,4 +160,5 @@ void *dramReserve(void)
     close(fd);
     return v1;
 #endif
+#endif /* PLATFORM_WINDOWS / __SWITCH__ / POSIX */
 }

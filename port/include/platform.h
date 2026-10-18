@@ -21,8 +21,15 @@
   #else
     #define PLATFORM_MACOS 1
   #endif
+#elif defined(__SWITCH__)
+  /* devkitA64/libnx: POSIX-flavoured newlib, no mmap/execinfo; the port
+   * layer provides libnx-based implementations of the memory-mapping
+   * primitives (see romdata.c / system.c __SWITCH__ branches). */
+  #define PLATFORM_SWITCH 1
+  #define PLATFORM_POSIX_FLAVOURED 1
 #elif defined(__linux__)
   #define PLATFORM_LINUX 1
+  #define PLATFORM_POSIX_FLAVOURED 1
 #else
   #error "Unsupported platform"
 #endif

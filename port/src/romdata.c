@@ -40,11 +40,15 @@ extern int snprintf(char *str, size_t maxsize, const char *format, ...);
 #endif
 
 #include "system.h"
+#ifdef __SWITCH__
+#include "switch_port_log.h"
+#endif
 #include "fs.h"
 #include "romdata.h"
 #include "pcmodels.h"
 #include "pccg.h"
 #include "romconvert.h"
+#include "switch_port_log.h"
 
 /* D50: struct font/fontchar layouts for the font-segment re-layout. Order
  * matters (see pcmodels.c): ultra64.h must finish before bondtypes.h. */
@@ -291,6 +295,7 @@ static int romdataFinishCartMap(const char *tok, u8 *img,
 
 int romdataInit(void)
 {
+    plog("romdataInit: entry");
     char err[128] = "";
     const char *list = romFileCandidates();
     char listBuf[512];
@@ -416,9 +421,20 @@ int romdataInit(void)
 #ifdef MAP_FIXED_NOREPLACE
             flags |= MAP_FIXED_NOREPLACE;
 #endif
-            void *at = mmap((void *)(uintptr_t)CART_BASE, maplen,
+            uintptr_t cartTarget = (uintptr_t)CART_BASE;
+#if defined(__SWITCH__)
+            /* NRO/PIE: absolute cart-address constants in romassets_<r>.s
+             * are rebased by the loader; map the ROM at the same rebased
+             * target so both stay in lockstep (portaddr_runtime.h). */
+            {
+                extern uintptr_t g_port_rebase;
+                cartTarget += g_port_rebase;
+            }
+#endif
+            plog("romdataInit: mmap target=0x%lx len=0x%llx", (unsigned long)cartTarget, (unsigned long long)maplen);
+            void *at = mmap((void *)cartTarget, maplen,
                             PROT_READ | PROT_WRITE, flags, -1, 0);
-            if (at != MAP_FAILED && at == (void *)(uintptr_t)CART_BASE) {
+            if (at != MAP_FAILED && at == (void *)cartTarget) {
                 mappedLen = maplen;
                 return romdataFinishCartMap(tok, img, sideTotal, cgTotal);
             }

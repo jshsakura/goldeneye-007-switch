@@ -347,7 +347,7 @@ static LONG __stdcall crashHandler(PEXCEPTION_POINTERS exinfo)
     return EXCEPTION_CONTINUE_EXECUTION;
 }
 
-#elif defined(PLATFORM_LINUX)
+#elif defined(PLATFORM_LINUX) && !defined(__SWITCH__)
 
 #include <ucontext.h>
 #include <signal.h>
@@ -516,6 +516,19 @@ void crashDumpThreads(const unsigned long *tids, const char **names, int count)
 
 #endif /* PLATFORM_WINDOWS / PLATFORM_LINUX */
 
+#if defined(__SWITCH__)
+/* Horizon: no signals/execinfo. Thread-roster-only dump for the kernel
+ * heartbeat watchdog (the log itself goes to sdmc via system.c). */
+void crashDumpThreads(const unsigned long *tids, const char **names, int count)
+{
+    sysLogPrintf(LOG_ERROR, "THREAD DUMP (%d live):", count);
+    for (int i = 0; i < count; ++i) {
+        sysLogPrintf(LOG_ERROR, "  tid=0x%lx  %s", tids ? tids[i] : 0UL,
+                     (names && names[i]) ? names[i] : "?");
+    }
+}
+#endif
+
 int g_CrashEnabled = 0;
 
 /*
@@ -549,7 +562,7 @@ void crashInit(void)
     SetErrorMode(SEM_FAILCRITICALERRORS);
     prevExFilter = SetUnhandledExceptionFilter(crashHandler);
     g_CrashEnabled = 1;
-#elif defined(PLATFORM_LINUX)
+#elif defined(PLATFORM_LINUX) && !defined(__SWITCH__)
     struct sigaction sigact = { 0 };
     sigact.sa_flags = SA_SIGINFO | SA_ONSTACK;
     sigact.sa_sigaction = crashHandler;
@@ -571,7 +584,7 @@ void crashShutdown(void)
     if (prevExFilter) {
         SetUnhandledExceptionFilter(prevExFilter);
     }
-#elif defined(PLATFORM_LINUX)
+#elif defined(PLATFORM_LINUX) && !defined(__SWITCH__)
     sigaction(SIGSEGV, &prevSigAction, NULL);
     sigaction(SIGABRT, &prevSigAction, NULL);
     sigaction(SIGBUS,  &prevSigAction, NULL);

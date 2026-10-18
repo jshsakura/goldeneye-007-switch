@@ -25,6 +25,32 @@
 #undef __need_NULL
 #undef __need_wint_t
 #include "hoststddef.h"
+#if defined(__SWITCH__)
+/* devkitA64/libstdc++: GCC's builtin <stddef.h> skips wint_t on a plain
+ * include (_STDDEF_H already set by the first chain), and newlib's
+ * sys/_types.h + <cwchar> then die on the missing type. Define it here the
+ * way GCC's __need path would have. */
+#ifndef _WINT_T
+#define _WINT_T
+#ifndef _WINT_T_DECLARED
+#define _WINT_T_DECLARED
+#endif
+typedef __WINT_TYPE__ wint_t;
+#endif
+#endif
+#elif defined(__SWITCH__)
+/* devkitA64/newlib: the empty N64 stub shadows the GCC builtin <stddef.h>,
+ * and newlib's sys/_types.h then dies on undeclared wint_t/ptrdiff_t
+ * (glibc happens to survive this; newlib does not). Route C TUs to the
+ * real builtin header by absolute path, same as the C++ path above. */
+#include "hoststddef.h"
+#ifndef _WINT_T
+#define _WINT_T
+#ifndef _WINT_T_DECLARED
+#define _WINT_T_DECLARED
+#endif
+typedef __WINT_TYPE__ wint_t;
+#endif
 #elif defined(_WIN32)
 /*
  * C TUs on MinGW: keep the empty N64 include/stddef.h stub. MinGW's CRT

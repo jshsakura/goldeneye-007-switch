@@ -70,7 +70,7 @@ hdr = '''/*
 #ifndef _PC_PROTOS_H_
 #define _PC_PROTOS_H_
 
-#if defined(PORT) && defined(__x86_64__)
+#if defined(PORT) && (defined(__x86_64__) || defined(__aarch64__))
 
 #include <stddef.h>      /* size_t */
 #include <PR/gbi.h>      /* Gfx, Mtx, Vtx, Light (shimmed on PC) */

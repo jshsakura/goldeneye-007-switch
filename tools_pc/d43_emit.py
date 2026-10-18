@@ -271,7 +271,11 @@ def process(name):
     if not key:
         errors.append(f"{name}: no filelist row")
         return
-    src = zlib.decompress(rom[addr:addr + size][2:], -15)
+    try:
+        src = zlib.decompress(rom[addr:addr + size][2:], -15)
+    except Exception as _e:
+        print("D43FAIL", name, hex(addr), size, _e)
+        raise
     D = len(src)
     # nsnt is keyed by header symbol (e.g. "armourguard"), not file base
     hkey = None

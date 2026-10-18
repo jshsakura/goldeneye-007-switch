@@ -2,11 +2,19 @@
 # Modelled on the Perfect Dark PC port's cmake/TargetArch.cmake.
 
 function(target_architecture OUT_VAR)
+  set(_arch "")
   if(CMAKE_CROSSCOMPILING)
     # Derive from the cross-compiler target, e.g. x86_64-w64-mingw32-gcc
     string(REGEX MATCH "^(i[3-6]86|x86_64|aarch64|arm|powerpc|wasm32)" _arch
            "${CMAKE_C_COMPILER_TARGET}")
-  elseif(CMAKE_SYSTEM_PROCESSOR STREQUAL "")
+    if(_arch STREQUAL "")
+      # devkitA64 sets no C_COMPILER_TARGET; ask the compiler itself
+      execute_process(COMMAND "${CMAKE_C_COMPILER}" -dumpmachine
+                      OUTPUT_VARIABLE _dm OUTPUT_STRIP_TRAILING_WHITESPACE)
+      string(REGEX MATCH "^(i[3-6]86|x86_64|aarch64|arm|powerpc|wasm32)" _arch "${_dm}")
+    endif()
+  endif()
+  if(_arch STREQUAL "" AND NOT CMAKE_CROSSCOMPILING)
     # D515: a stripped native env (e.g. the build-pc.sh PowerShell re-exec
     # before it restored PROCESSOR_ARCHITECTURE) leaves
     # CMAKE_HOST_SYSTEM_PROCESSOR / CMAKE_SYSTEM_PROCESSOR empty. Ask the

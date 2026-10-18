@@ -170,6 +170,13 @@ static int fetchLatest(char *buf, size_t cap)
     buf[len] = 0;
     return ok;
 #else
+#if defined(__SWITCH__)
+    /* Horizon: no popen/curl. The update check is opt-in and harmless to
+     * drop; report "no data". */
+    buf[0] = 0;
+    (void)cap;
+    return 0;
+#else
     FILE *f = popen("curl -q -fsS --proto =https --max-time 5 -A '" UC_UA "' '" UC_URL "' 2>/dev/null", "r");
     if (!f) return 0;
     size_t got;
@@ -177,6 +184,7 @@ static int fetchLatest(char *buf, size_t cap)
     int rc = pclose(f);   /* nonzero if curl is missing (127) or failed */
     buf[len] = 0;
     return rc == 0 && len > 0;
+#endif
 #endif
 }
 

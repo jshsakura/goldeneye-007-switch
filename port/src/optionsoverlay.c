@@ -112,6 +112,7 @@ static const char *const kPadPreset[] = { "1.1 Jinx", "1.2 Christmas", "1.3 Fros
 /* D516: the game's own control styles, shown in Original (index = style value). */
 static const char *const kOrigStyle[] = { "1.1 Honey", "1.2 Solitaire", "1.3 Kissy", "1.4 Goodnight",
                                           "2.1 Plenty", "2.2 Galore", "2.3 Domino", "2.4 Goodhead", NULL };
+static const char *const kGyroMode[]  = { "Off", "Aim only (ZL)", "Always on", NULL };
 static int s_padSeat = 0;   /* D469: seat edited by the Controller page rows */
 static const char *const kControlScheme[] = { "Extended", "Original", NULL };   /* D513/D554: display text only (index = stored value) */
 static const char *const kAimMode[]   = { "Original", "Centered", NULL };   /* D337 */
@@ -351,6 +352,9 @@ static struct Row rows[] = {
     { .key="Input.PadTriggerPct", .label="Trigger threshold", .kind=ROW_SLIDER, .step=1, .unit="%" },   /* D506: raw is already a percent */
     /* D401 item 3: one global Rumble Pak strength (0 = silent, 1 = full, dflt 0.5). */
     { .key="Input.RumbleScale", .label="Vibration", .kind=ROW_SLIDER, .step=0.05 },
+    { .key="Input.Gyro", .label="Gyro aiming", .kind=ROW_ENUM, .step=1, .names=kGyroMode },
+    { .key="Input.GyroSensitivity", .label="Gyro sensitivity", .kind=ROW_SLIDER, .step=10, .unit="%" },
+    { .key="Input.GyroInvertY", .label="Invert gyro look", .kind=ROW_TOGGLE, .step=1, .names=kOnOff },
     { .key="__ResetController", .label="Reset to defaults", .kind=ROW_ACTION },
     SEP_BACK(Controller),
 
@@ -2017,6 +2021,9 @@ static const struct { const char *key; double def; } kResetDefaults[] = {
     { "Input.PadSouthpaw",        0 },  /* = 0 (off), Wave A */
     { "Input.PadTriggerPct",     25 },  /* = 25 (was 23; rounded, D508) */
     { "Input.RumbleScale", 0.5 },       /* = gRumbleScale (0.5f), D401 */
+    { "Input.Gyro",              1 },   /* = 1 (Aim only, ZL) */
+    { "Input.GyroSensitivity", 100 },   /* = 100% */
+    { "Input.GyroInvertY",       0 },   /* = 0 (normal) */
     { "Input.CrouchMode",        1 },   /* = 1 (toggle; D556) */
     { "Input.MenuPointerMode",   1 },   /* = 1 (direct pointer); no F10 row since D561 (front-end-only legacy option, ini key kept) */
     { "Input.MouseSmoothing",    0 },   /* = 0 (raw) */

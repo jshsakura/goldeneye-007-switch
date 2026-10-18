@@ -95,6 +95,8 @@ message(STATUS "Target arch: ${TARGET_ARCH} (64bit=${TARGET_IS_64BIT})")
 
 if(WIN32)
   set(TARGET_OS "windows")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "NintendoSwitch")
+  set(TARGET_OS "switch")
 elseif(APPLE)
   set(TARGET_OS "osx")
 elseif(UNIX)
@@ -104,6 +106,14 @@ else()
 endif()
 set(TARGET_PLATFORM "${TARGET_ARCH}-${TARGET_OS}")
 message(STATUS "Target platform: ${TARGET_PLATFORM}")
+
+if(TARGET_OS STREQUAL "switch")
+  # Static newlib: the decomp's own libc replacements (src/str.c strtol, ...)
+  # collide with libc.a at link time. glibc links dynamically so the exe's
+  # strong symbol silently wins there; replicate that with the linker flag
+  # (first definition seen wins — ours).
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--allow-multiple-definition")
+endif()
 
 # Region -> compile definitions.
 #
@@ -164,7 +174,19 @@ configure_file(
 # the toolchain include dir from the compiler location (MinGW/MSYS2 layout:
 # bin/../include) and generate an absolute-path include.
 get_filename_component(_PORT_GCC_DIR "${CMAKE_C_COMPILER}" DIRECTORY)
-get_filename_component(PORT_HOST_STRING_H "${_PORT_GCC_DIR}/../include/string.h" ABSOLUTE)
+# Toolchain header layout: MinGW/MSYS2 keeps them at bin/../include; devkitPro
+# keeps them at bin/../<triple>/include. Pick whichever actually has string.h.
+set(_PORT_HOST_INC "${_PORT_GCC_DIR}/../include")
+if(NOT EXISTS "${_PORT_HOST_INC}/string.h")
+  file(GLOB _PORT_TRIPLE_DIRS "${_PORT_GCC_DIR}/../*-none-elf/include")
+  foreach(_d ${_PORT_TRIPLE_DIRS})
+    if(EXISTS "${_d}/string.h")
+      set(_PORT_HOST_INC "${_d}")
+      break()
+    endif()
+  endforeach()
+endif()
+get_filename_component(PORT_HOST_STRING_H "${_PORT_HOST_INC}/string.h" ABSOLUTE)
 configure_file(
   "${CMAKE_SOURCE_DIR}/port/include/hoststring.h.in"
   "${CMAKE_BINARY_DIR}/port/include/hoststring.h" @ONLY)
@@ -173,7 +195,7 @@ configure_file(
 # the include path and shadows the system header; libstdc++'s <thread>/gthr
 # headers in the fast3d C++ TUs need the real <sched.h> (cpu_set_t,
 # sched_yield). Both MinGW and Linux keep <sched.h> at bin/../include.
-get_filename_component(PORT_HOST_SCHED_H "${_PORT_GCC_DIR}/../include/sched.h" ABSOLUTE)
+get_filename_component(PORT_HOST_SCHED_H "${_PORT_HOST_INC}/sched.h" ABSOLUTE)
 configure_file(
   "${CMAKE_SOURCE_DIR}/port/include/hostsched.h.in"
   "${CMAKE_BINARY_DIR}/port/include/hostsched.h" @ONLY)
@@ -183,7 +205,7 @@ configure_file(
 # one C++ TU (fast3d): MinGW's own sec_api/stdlib_s.h does `#include
 # <stdlib.h>`, which resolves to the N64 header via -I. The shim routes C++
 # TUs to the host header by absolute path (same trick as hoststring.h).
-get_filename_component(PORT_HOST_STDLIB_H "${_PORT_GCC_DIR}/../include/stdlib.h" ABSOLUTE)
+get_filename_component(PORT_HOST_STDLIB_H "${_PORT_HOST_INC}/stdlib.h" ABSOLUTE)
 configure_file(
   "${CMAKE_SOURCE_DIR}/port/include/hoststdlib.h.in"
   "${CMAKE_BINARY_DIR}/port/include/hoststdlib.h" @ONLY)
@@ -354,6 +376,11 @@ set(LIBS "")
 
 find_package(SDL2 REQUIRED)
 include_directories(SYSTEM "${SDL2_INCLUDE_DIR}")
+if(NOT SDL2_LIBRARY AND SDL2_LIBRARIES)
+  # devkitPro toolchain: FindSDL2 goes through pkg-config and fills the
+  # plural variable only — map it so the -l flag reaches the link line.
+  set(SDL2_LIBRARY ${SDL2_LIBRARIES})
+endif()
 list(APPEND LIBS "${SDL2_LIBRARY}")
 
 find_package(ZLIB REQUIRED)
@@ -384,6 +411,11 @@ if(NOT GL_LIBRARY)
     set(GL_LIBRARY opengl32)
   elseif(APPLE)
     set(GL_LIBRARY "-framework OpenGL")
+  elseif(TARGET_OS STREQUAL "switch")
+    # switch-mesa: all GL entry points come from SDL_GL_GetProcAddress at
+    # runtime; link only the EGL/nouveau backend libraries.
+    set(GL_LIBRARY EGL)
+    list(APPEND LIBS glapi drm_nouveau)
   else()
     set(GL_LIBRARY GL)
   endif()
@@ -396,6 +428,10 @@ if(NOT EXTRA_LIBRARIES)
     set(EXTRA_LIBRARIES dbghelp -static-libstdc++ pthread)
   elseif(WIN32)
     set(EXTRA_LIBRARIES dbghelp -static-libstdc++)
+  elseif(TARGET_OS STREQUAL "switch")
+    # devkitA64: no libdl (crash.c's dladdr is Linux-only, already guarded);
+    # pthreads/m/stdc++ come from the toolchain + newlib.
+    set(EXTRA_LIBRARIES pthread)
   else()
     set(EXTRA_LIBRARIES stdc++ m dl pthread)
   endif()

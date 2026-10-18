@@ -157,6 +157,16 @@ static int rcRunConverter(const char *exePath, const char *rom, const char *out)
     return rc;
 }
 #else
+#if defined(__SWITCH__)
+/* Horizon: no fork/exec. The converter cannot run on-console; the launcher
+ * path that reaches this returns failure and the sidecar error the port
+ * already prints tells the user to prepare assets on a PC. */
+static int rcRunConverter(const char *exePath, const char *rom, const char *out)
+{
+    (void)exePath; (void)rom; (void)out;
+    return -1;
+}
+#else
 static int rcRunConverter(const char *exePath, const char *rom, const char *out)
 {
     pid_t pid = fork();
@@ -176,6 +186,7 @@ static int rcRunConverter(const char *exePath, const char *rom, const char *out)
         return WEXITSTATUS(status);
     return -1;
 }
+#endif
 #endif
 
 int romConvertEnsureSidecars(const unsigned char *romImg, const char *romRelPath)

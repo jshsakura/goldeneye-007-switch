@@ -2525,347 +2525,347 @@
 .global LarchJ
 .set LarchJ, 0x108E8830
 .global end_LarchJ
-.set end_LarchJ, 0x108E8E90
+.set end_LarchJ, 0x108E8DE0
 .global LarecE
-.set LarecE, 0x108E8E90
+.set LarecE, 0x108E8DE0
 .global end_LarecE
-.set end_LarecE, 0x108E9460
+.set end_LarecE, 0x108E93B0
 .global LarecJ
-.set LarecJ, 0x108E9460
+.set LarecJ, 0x108E93B0
 .global end_LarecJ
-.set end_LarecJ, 0x108E9A00
+.set end_LarecJ, 0x108E98E0
 .global LarkE
-.set LarkE, 0x108E9A00
+.set LarkE, 0x108E98E0
 .global end_LarkE
-.set end_LarkE, 0x108EA0A0
+.set end_LarkE, 0x108E9F80
 .global LarkJ
-.set LarkJ, 0x108EA0A0
+.set LarkJ, 0x108E9F80
 .global end_LarkJ
-.set end_LarkJ, 0x108EA730
+.set end_LarkJ, 0x108EA550
 .global LashE
-.set LashE, 0x108EA730
+.set LashE, 0x108EA550
 .global end_LashE
-.set end_LashE, 0x108EA740
+.set end_LashE, 0x108EA560
 .global LashJ
-.set LashJ, 0x108EA740
+.set LashJ, 0x108EA560
 .global end_LashJ
-.set end_LashJ, 0x108EA750
+.set end_LashJ, 0x108EA570
 .global LaztE
-.set LaztE, 0x108EA750
+.set LaztE, 0x108EA570
 .global end_LaztE
-.set end_LaztE, 0x108EAB90
+.set end_LaztE, 0x108EA9B0
 .global LaztJ
-.set LaztJ, 0x108EAB90
+.set LaztJ, 0x108EA9B0
 .global end_LaztJ
-.set end_LaztJ, 0x108EAFE0
+.set end_LaztJ, 0x108EAE00
 .global LcatE
-.set LcatE, 0x108EAFE0
+.set LcatE, 0x108EAE00
 .global end_LcatE
-.set end_LcatE, 0x108EAFF0
+.set end_LcatE, 0x108EAE10
 .global LcatJ
-.set LcatJ, 0x108EAFF0
+.set LcatJ, 0x108EAE10
 .global end_LcatJ
-.set end_LcatJ, 0x108EB000
+.set end_LcatJ, 0x108EAE20
 .global LcaveE
-.set LcaveE, 0x108EB000
+.set LcaveE, 0x108EAE20
 .global end_LcaveE
-.set end_LcaveE, 0x108EB400
+.set end_LcaveE, 0x108EB220
 .global LcaveJ
-.set LcaveJ, 0x108EB400
+.set LcaveJ, 0x108EB220
 .global end_LcaveJ
-.set end_LcaveJ, 0x108EB860
+.set end_LcaveJ, 0x108EB590
 .global LcradE
-.set LcradE, 0x108EB860
+.set LcradE, 0x108EB590
 .global end_LcradE
-.set end_LcradE, 0x108EBD30
+.set end_LcradE, 0x108EBA60
 .global LcradJ
-.set LcradJ, 0x108EBD30
+.set LcradJ, 0x108EBA60
 .global end_LcradJ
-.set end_LcradJ, 0x108EC1D0
+.set end_LcradJ, 0x108EBEE0
 .global LcrypE
-.set LcrypE, 0x108EC1D0
+.set LcrypE, 0x108EBEE0
 .global end_LcrypE
-.set end_LcrypE, 0x108EC420
+.set end_LcrypE, 0x108EC130
 .global LcrypJ
-.set LcrypJ, 0x108EC420
+.set LcrypJ, 0x108EC130
 .global end_LcrypJ
-.set end_LcrypJ, 0x108EC6C0
+.set end_LcrypJ, 0x108EC320
 .global LdamE
-.set LdamE, 0x108EC6C0
+.set LdamE, 0x108EC320
 .global end_LdamE
-.set end_LdamE, 0x108ECB10
+.set end_LdamE, 0x108EC770
 .global LdamJ
-.set LdamJ, 0x108ECB10
+.set LdamJ, 0x108EC770
 .global end_LdamJ
-.set end_LdamJ, 0x108ECF60
+.set end_LdamJ, 0x108ECB30
 .global LdepoE
-.set LdepoE, 0x108ECF60
+.set LdepoE, 0x108ECB30
 .global end_LdepoE
-.set end_LdepoE, 0x108ED2D0
+.set end_LdepoE, 0x108ECEA0
 .global LdepoJ
-.set LdepoJ, 0x108ED2D0
+.set LdepoJ, 0x108ECEA0
 .global end_LdepoJ
-.set end_LdepoJ, 0x108ED600
+.set end_LdepoJ, 0x108ED150
 .global LdestE
-.set LdestE, 0x108ED600
+.set LdestE, 0x108ED150
 .global end_LdestE
-.set end_LdestE, 0x108EDA90
+.set end_LdestE, 0x108ED5E0
 .global LdestJ
-.set LdestJ, 0x108EDA90
+.set LdestJ, 0x108ED5E0
 .global end_LdestJ
-.set end_LdestJ, 0x108EDEF0
+.set end_LdestJ, 0x108ED990
 .global LdishE
-.set LdishE, 0x108EDEF0
+.set LdishE, 0x108ED990
 .global end_LdishE
-.set end_LdishE, 0x108EDF00
+.set end_LdishE, 0x108ED9A0
 .global LdishJ
-.set LdishJ, 0x108EDF00
+.set LdishJ, 0x108ED9A0
 .global end_LdishJ
-.set end_LdishJ, 0x108EDF10
+.set end_LdishJ, 0x108ED9B0
 .global LearE
-.set LearE, 0x108EDF10
+.set LearE, 0x108ED9B0
 .global end_LearE
-.set end_LearE, 0x108EDF20
+.set end_LearE, 0x108ED9C0
 .global LearJ
-.set LearJ, 0x108EDF20
+.set LearJ, 0x108ED9C0
 .global end_LearJ
-.set end_LearJ, 0x108EDF30
+.set end_LearJ, 0x108ED9D0
 .global LeldE
-.set LeldE, 0x108EDF30
+.set LeldE, 0x108ED9D0
 .global end_LeldE
-.set end_LeldE, 0x108EDF40
+.set end_LeldE, 0x108ED9E0
 .global LeldJ
-.set LeldJ, 0x108EDF40
+.set LeldJ, 0x108ED9E0
 .global end_LeldJ
-.set end_LeldJ, 0x108EDF50
+.set end_LeldJ, 0x108ED9F0
 .global LgunE
-.set LgunE, 0x108EDF50
+.set LgunE, 0x108ED9F0
 .global end_LgunE
-.set end_LgunE, 0x108EE670
+.set end_LgunE, 0x108EE110
 .global LgunJ
-.set LgunJ, 0x108EE670
+.set LgunJ, 0x108EE110
 .global end_LgunJ
-.set end_LgunJ, 0x108EEDB0
+.set end_LgunJ, 0x108EE6E0
 .global LimpE
-.set LimpE, 0x108EEDB0
+.set LimpE, 0x108EE6E0
 .global end_LimpE
-.set end_LimpE, 0x108EEDC0
+.set end_LimpE, 0x108EE6F0
 .global LimpJ
-.set LimpJ, 0x108EEDC0
+.set LimpJ, 0x108EE6F0
 .global end_LimpJ
-.set end_LimpJ, 0x108EEDD0
+.set end_LimpJ, 0x108EE700
 .global LjunE
-.set LjunE, 0x108EEDD0
+.set LjunE, 0x108EE700
 .global end_LjunE
-.set end_LjunE, 0x108EF2F0
+.set end_LjunE, 0x108EEC20
 .global LjunJ
-.set LjunJ, 0x108EF2F0
+.set LjunJ, 0x108EEC20
 .global end_LjunJ
-.set end_LjunJ, 0x108EF820
+.set end_LjunJ, 0x108EF0A0
 .global LleeE
-.set LleeE, 0x108EF820
+.set LleeE, 0x108EF0A0
 .global end_LleeE
-.set end_LleeE, 0x108EF830
+.set end_LleeE, 0x108EF0B0
 .global LleeJ
-.set LleeJ, 0x108EF830
+.set LleeJ, 0x108EF0B0
 .global end_LleeJ
-.set end_LleeJ, 0x108EF840
+.set end_LleeJ, 0x108EF0C0
 .global LlenE
-.set LlenE, 0x108EF840
+.set LlenE, 0x108EF0C0
 .global end_LlenE
-.set end_LlenE, 0x108EFEF0
+.set end_LlenE, 0x108EF770
 .global LlenJ
-.set LlenJ, 0x108EFEF0
+.set LlenJ, 0x108EF770
 .global end_LlenJ
-.set end_LlenJ, 0x108F0610
+.set end_LlenJ, 0x108EFE90
 .global LlipE
-.set LlipE, 0x108F0610
+.set LlipE, 0x108EFE90
 .global end_LlipE
-.set end_LlipE, 0x108F0620
+.set end_LlipE, 0x108EFEA0
 .global LlipJ
-.set LlipJ, 0x108F0620
+.set LlipJ, 0x108EFEA0
 .global end_LlipJ
-.set end_LlipJ, 0x108F0630
+.set end_LlipJ, 0x108EFEB0
 .global LlueE
-.set LlueE, 0x108F0630
+.set LlueE, 0x108EFEB0
 .global end_LlueE
-.set end_LlueE, 0x108F0640
+.set end_LlueE, 0x108EFEC0
 .global LlueJ
-.set LlueJ, 0x108F0640
+.set LlueJ, 0x108EFEC0
 .global end_LlueJ
-.set end_LlueJ, 0x108F0650
+.set end_LlueJ, 0x108EFED0
 .global LmiscE
-.set LmiscE, 0x108F0650
+.set LmiscE, 0x108EFED0
 .global end_LmiscE
-.set end_LmiscE, 0x108F0900
+.set end_LmiscE, 0x108F0180
 .global LmiscJ
-.set LmiscJ, 0x108F0900
+.set LmiscJ, 0x108F0180
 .global end_LmiscJ
-.set end_LmiscJ, 0x108F0BC0
+.set end_LmiscJ, 0x108F0400
 .global LmpmenuE
-.set LmpmenuE, 0x108F0BC0
+.set LmpmenuE, 0x108F0400
 .global end_LmpmenuE
-.set end_LmpmenuE, 0x108F0D60
+.set end_LmpmenuE, 0x108F05A0
 .global LmpmenuJ
-.set LmpmenuJ, 0x108F0D60
+.set LmpmenuJ, 0x108F05A0
 .global end_LmpmenuJ
-.set end_LmpmenuJ, 0x108F0F00
+.set end_LmpmenuJ, 0x108F0720
 .global LmpweaponsE
-.set LmpweaponsE, 0x108F0F00
+.set LmpweaponsE, 0x108F0720
 .global end_LmpweaponsE
-.set end_LmpweaponsE, 0x108F0FC0
+.set end_LmpweaponsE, 0x108F07E0
 .global LmpweaponsJ
-.set LmpweaponsJ, 0x108F0FC0
+.set LmpweaponsJ, 0x108F07E0
 .global end_LmpweaponsJ
-.set end_LmpweaponsJ, 0x108F1090
+.set end_LmpweaponsJ, 0x108F0880
 .global LoatE
-.set LoatE, 0x108F1090
+.set LoatE, 0x108F0880
 .global end_LoatE
-.set end_LoatE, 0x108F10A0
+.set end_LoatE, 0x108F0890
 .global LoatJ
-.set LoatJ, 0x108F10A0
+.set LoatJ, 0x108F0890
 .global end_LoatJ
-.set end_LoatJ, 0x108F10B0
+.set end_LoatJ, 0x108F08A0
 .global LoptionsE
-.set LoptionsE, 0x108F10B0
+.set LoptionsE, 0x108F08A0
 .global end_LoptionsE
-.set end_LoptionsE, 0x108F12E0
+.set end_LoptionsE, 0x108F0AD0
 .global LoptionsJ
-.set LoptionsJ, 0x108F12E0
+.set LoptionsJ, 0x108F0AD0
 .global end_LoptionsJ
-.set end_LoptionsJ, 0x108F1520
+.set end_LoptionsJ, 0x108F0D00
 .global LpamE
-.set LpamE, 0x108F1520
+.set LpamE, 0x108F0D00
 .global end_LpamE
-.set end_LpamE, 0x108F1530
+.set end_LpamE, 0x108F0D10
 .global LpamJ
-.set LpamJ, 0x108F1530
+.set LpamJ, 0x108F0D10
 .global end_LpamJ
-.set end_LpamJ, 0x108F1540
+.set end_LpamJ, 0x108F0D20
 .global LpeteE
-.set LpeteE, 0x108F1540
+.set LpeteE, 0x108F0D20
 .global end_LpeteE
-.set end_LpeteE, 0x108F19C0
+.set end_LpeteE, 0x108F11A0
 .global LpeteJ
-.set LpeteJ, 0x108F19C0
+.set LpeteJ, 0x108F11A0
 .global end_LpeteJ
-.set end_LpeteJ, 0x108F1E30
+.set end_LpeteJ, 0x108F15C0
 .global LpropobjE
-.set LpropobjE, 0x108F1E30
+.set LpropobjE, 0x108F15C0
 .global end_LpropobjE
-.set end_LpropobjE, 0x108F20D0
+.set end_LpropobjE, 0x108F1860
 .global LpropobjJ
-.set LpropobjJ, 0x108F20D0
+.set LpropobjJ, 0x108F1860
 .global end_LpropobjJ
-.set end_LpropobjJ, 0x108F2370
+.set end_LpropobjJ, 0x108F1AD0
 .global LrefE
-.set LrefE, 0x108F2370
+.set LrefE, 0x108F1AD0
 .global end_LrefE
-.set end_LrefE, 0x108F2380
+.set end_LrefE, 0x108F1AE0
 .global LrefJ
-.set LrefJ, 0x108F2380
+.set LrefJ, 0x108F1AE0
 .global end_LrefJ
-.set end_LrefJ, 0x108F2390
+.set end_LrefJ, 0x108F1AF0
 .global LritE
-.set LritE, 0x108F2390
+.set LritE, 0x108F1AF0
 .global end_LritE
-.set end_LritE, 0x108F23A0
+.set end_LritE, 0x108F1B00
 .global LritJ
-.set LritJ, 0x108F23A0
+.set LritJ, 0x108F1B00
 .global end_LritJ
-.set end_LritJ, 0x108F23B0
+.set end_LritJ, 0x108F1B10
 .global LrunE
-.set LrunE, 0x108F23B0
+.set LrunE, 0x108F1B10
 .global end_LrunE
-.set end_LrunE, 0x108F2620
+.set end_LrunE, 0x108F1D80
 .global LrunJ
-.set LrunJ, 0x108F2620
+.set LrunJ, 0x108F1D80
 .global end_LrunJ
-.set end_LrunJ, 0x108F28B0
+.set end_LrunJ, 0x108F1FC0
 .global LsevE
-.set LsevE, 0x108F28B0
+.set LsevE, 0x108F1FC0
 .global end_LsevE
-.set end_LsevE, 0x108F2E10
+.set end_LsevE, 0x108F2520
 .global LsevJ
-.set LsevJ, 0x108F2E10
+.set LsevJ, 0x108F2520
 .global end_LsevJ
-.set end_LsevJ, 0x108F3320
+.set end_LsevJ, 0x108F29D0
 .global LsevbE
-.set LsevbE, 0x108F3320
+.set LsevbE, 0x108F29D0
 .global end_LsevbE
-.set end_LsevbE, 0x108F3A70
+.set end_LsevbE, 0x108F3120
 .global LsevbJ
-.set LsevbJ, 0x108F3A70
+.set LsevbJ, 0x108F3120
 .global end_LsevbJ
-.set end_LsevbJ, 0x108F4260
+.set end_LsevbJ, 0x108F3910
 .global LsevxE
-.set LsevxE, 0x108F4260
+.set LsevxE, 0x108F3910
 .global end_LsevxE
-.set end_LsevxE, 0x108F46C0
+.set end_LsevxE, 0x108F3D70
 .global LsevxJ
-.set LsevxJ, 0x108F46C0
+.set LsevxJ, 0x108F3D70
 .global end_LsevxJ
-.set end_LsevxJ, 0x108F4A90
+.set end_LsevxJ, 0x108F40F0
 .global LsevxbE
-.set LsevxbE, 0x108F4A90
+.set LsevxbE, 0x108F40F0
 .global end_LsevxbE
-.set end_LsevxbE, 0x108F4F20
+.set end_LsevxbE, 0x108F4580
 .global LsevxbJ
-.set LsevxbJ, 0x108F4F20
+.set LsevxbJ, 0x108F4580
 .global end_LsevxbJ
-.set end_LsevxbJ, 0x108F5370
+.set end_LsevxbJ, 0x108F4990
 .global LshoE
-.set LshoE, 0x108F5370
+.set LshoE, 0x108F4990
 .global end_LshoE
-.set end_LshoE, 0x108F5380
+.set end_LshoE, 0x108F49A0
 .global LshoJ
-.set LshoJ, 0x108F5380
+.set LshoJ, 0x108F49A0
 .global end_LshoJ
-.set end_LshoJ, 0x108F5390
+.set end_LshoJ, 0x108F49B0
 .global LsiloE
-.set LsiloE, 0x108F5390
+.set LsiloE, 0x108F49B0
 .global end_LsiloE
-.set end_LsiloE, 0x108F5940
+.set end_LsiloE, 0x108F4F60
 .global LsiloJ
-.set LsiloJ, 0x108F5940
+.set LsiloJ, 0x108F4F60
 .global end_LsiloJ
-.set end_LsiloJ, 0x108F5F30
+.set end_LsiloJ, 0x108F5470
 .global LstatE
-.set LstatE, 0x108F5F30
+.set LstatE, 0x108F5470
 .global end_LstatE
-.set end_LstatE, 0x108F6850
+.set end_LstatE, 0x108F5D90
 .global LstatJ
-.set LstatJ, 0x108F6850
+.set LstatJ, 0x108F5D90
 .global end_LstatJ
-.set end_LstatJ, 0x108F70A0
+.set end_LstatJ, 0x108F65E0
 .global LtitleE
-.set LtitleE, 0x108F70A0
+.set LtitleE, 0x108F65E0
 .global end_LtitleE
-.set end_LtitleE, 0x108F7BB0
+.set end_LtitleE, 0x108F70F0
 .global LtitleJ
-.set LtitleJ, 0x108F7BB0
+.set LtitleJ, 0x108F70F0
 .global end_LtitleJ
-.set end_LtitleJ, 0x108F87A0
+.set end_LtitleJ, 0x108F7B40
 .global LtraE
-.set LtraE, 0x108F87A0
+.set LtraE, 0x108F7B40
 .global end_LtraE
-.set end_LtraE, 0x108F8BD0
+.set end_LtraE, 0x108F7F70
 .global LtraJ
-.set LtraJ, 0x108F8BD0
+.set LtraJ, 0x108F7F70
 .global end_LtraJ
-.set end_LtraJ, 0x108F9020
+.set end_LtraJ, 0x108F8330
 .global LwaxE
-.set LwaxE, 0x108F9020
+.set LwaxE, 0x108F8330
 .global end_LwaxE
-.set end_LwaxE, 0x108F9030
+.set end_LwaxE, 0x108F8340
 .global LwaxJ
-.set LwaxJ, 0x108F9030
+.set LwaxJ, 0x108F8340
 .global end_LwaxJ
-.set end_LwaxJ, 0x108F9040
+.set end_LwaxJ, 0x108F8350
 .global ob__ob_end_seg
-.set ob__ob_end_seg, 0x108F9040
+.set ob__ob_end_seg, 0x108F8350
 .global end_ob__ob_end_seg
-.set end_ob__ob_end_seg, 0x108F9050
+.set end_ob__ob_end_seg, 0x108F8360
 
 /* --- assets/ramrom (demo replays) ---------------------------- */
 .global ramrom_Dam_1
@@ -3374,19 +3374,19 @@
 .global _obsegSegmentRomStart
 .set _obsegSegmentRomStart, 0x10439380
 .global _obsegSegmentRomEnd
-.set _obsegSegmentRomEnd, 0x108F9050
+.set _obsegSegmentRomEnd, 0x108F8360
 .global _obsegSegmentStart
 .set _obsegSegmentStart, 0x10439380
 .global _obsegSegmentEnd
-.set _obsegSegmentEnd, 0x108F9050
+.set _obsegSegmentEnd, 0x108F8360
 .global _imagesSegmentRomStart
-.set _imagesSegmentRomStart, 0x108F9050
+.set _imagesSegmentRomStart, 0x108F8360
 .global _imagesSegmentRomEnd
-.set _imagesSegmentRomEnd, 0x108F9050
+.set _imagesSegmentRomEnd, 0x10C00000
 .global _imagesSegmentStart
-.set _imagesSegmentStart, 0x108F9050
+.set _imagesSegmentStart, 0x108F8360
 .global _imagesSegmentEnd
-.set _imagesSegmentEnd, 0x108F9050
+.set _imagesSegmentEnd, 0x10C00000
 .global _alt_startSegmentRomStart
 .set _alt_startSegmentRomStart, 0x10101000
 .global _alt_startSegmentStart
